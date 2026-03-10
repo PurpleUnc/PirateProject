@@ -1,0 +1,39 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ShipControls : MonoBehaviour
+{
+    public Rigidbody rb;
+    public float forwardSpeed;
+    public float heightSpeed;
+    public float rotationSpeed;
+    public float speedFactor;
+    
+    private float CurrentShipRotY = 0.0f;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void Update()
+    {
+        float _vertical = Input.GetAxis("Vertical");
+        float _horizontal = Input.GetAxis("Horizontal");
+        float _depth = Input.GetAxis("Depth");
+
+        Vector3 movement = (transform.forward * _vertical) * forwardSpeed + (transform.up * _depth) * heightSpeed;
+        rb.drag = 5f;
+        
+        float rotSpeedFactor = rb.velocity.magnitude;
+        if(rotSpeedFactor <= 2.5){
+            rotSpeedFactor = 2.5f;
+        }
+        print(rotSpeedFactor);
+        CurrentShipRotY += _horizontal * rotSpeedFactor * rotationSpeed * Time.deltaTime;
+
+        rb.transform.localEulerAngles = new Vector3(0.0f, CurrentShipRotY * rotationSpeed, 0.0f);
+        rb.AddForce(movement.normalized * speedFactor, ForceMode.Acceleration);
+    }
+}
